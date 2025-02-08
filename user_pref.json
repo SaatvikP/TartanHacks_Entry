@@ -1,0 +1,114 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "sport": "basketball",
+            "random_letters": [
+                "E",
+                "C",
+                "A",
+                "I",
+                "J"
+            ]
+        },
+        {
+            "id": 2,
+            "sport": "baseball",
+            "random_letters": [
+                "I",
+                "D",
+                "H",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "id": 3,
+            "sport": "soccer",
+            "random_letters": [
+                "F",
+                "B",
+                "E",
+                "D",
+                "J"
+            ]
+        },
+        {
+            "id": 4,
+            "sport": "soccer",
+            "random_letters": [
+                "J",
+                "D",
+                "G",
+                "E",
+                "A"
+            ]
+        },
+        {
+            "id": 5,
+            "sport": "baseball",
+            "random_letters": [
+                "G",
+                "J",
+                "I",
+                "H",
+                "F"
+            ]
+        },
+        {
+            "id": 6,
+            "sport": "soccer",
+            "random_letters": [
+                "H",
+                "D",
+                "A",
+                "G",
+                "C"
+            ]
+        },
+        {
+            "id": 7,
+            "sport": "baseball",
+            "random_letters": [
+                "J",
+                "G",
+                "F",
+                "C",
+                "I"
+            ]
+        },
+        {
+            "id": 8,
+            "sport": "baseball",
+            "random_letters": [
+                "G",
+                "H",
+                "D",
+                "E",
+                "A"
+            ]
+        },
+        {
+            "id": 9,
+            "sport": "cricket",
+            "random_letters": [
+                "D",
+                "B",
+                "I",
+                "C",
+                "H"
+            ]
+        },
+        {
+            "id": 10,
+            "sport": "football",
+            "random_letters": [
+                "E",
+                "D",
+                "I",
+                "F",
+                "G"
+            ]
+        }
+    ]
+}
