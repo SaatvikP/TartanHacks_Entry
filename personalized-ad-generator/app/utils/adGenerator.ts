@@ -1,26 +1,24 @@
-export async function generateAd(interests: string, product: string): Promise<string> {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+export async function generateAd(artist: string, product: string, brand: string): Promise<string | null> {
+  const API_URL = "http://127.0.0.1:8000/generate_ad"; // Replace with your backend's URL if deployed
 
-  const interestList = interests.split(",").map((i) => i.trim().toLowerCase())
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ artist, product, brand }),
+    });
 
-  // Mock ad generation logic
-  let adContent = `Experience the ultimate ${product} that's perfect for `
-
-  if (interestList.includes("football") || interestList.includes("sports")) {
-    adContent += `sports enthusiasts! Whether you're on the field or hitting the gym, our ${product} will keep you at the top of your game. `
+    if (response.ok) {
+      const data = await response.json();
+      return data.video_url; // This assumes the backend returns a video URL
+    } else {
+      console.error("Error:", response.statusText);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
   }
-
-  if (interestList.includes("music") || interestList.includes("ed sheeran")) {
-    adContent += `music lovers! Inspired by the rhythm and style of artists like Ed Sheeran, our ${product} will hit all the right notes in your daily life. `
-  }
-
-  if (interestList.includes("cooking") || interestList.includes("healthy lifestyle")) {
-    adContent += `health-conscious individuals! Perfect for preparing delicious and nutritious meals, our ${product} will revolutionize your cooking experience. `
-  }
-
-  adContent += `Elevate your ${interestList.join(" and ")} experience with our cutting-edge ${product}! Limited time offer - don't miss out!`
-
-  return adContent
 }
-

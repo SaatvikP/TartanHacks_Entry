@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useRouter } from "next/navigation"  // Import Next.js router
 
 const goals = [
   {
@@ -36,6 +37,7 @@ const goals = [
 
 export default function Home() {
   const [expandedCard, setExpandedCard] = useState<number | null>(null)
+  const router = useRouter() // ✅ Add router to navigate
 
   return (
     <div className="px-4 py-8 sm:px-6 lg:px-8">
@@ -78,7 +80,16 @@ export default function Home() {
           </motion.div>
         ))}
       </div>
+
+      {/* ✅ "Let's Try" Button - Navigates to /generate */}
+      <div className="flex justify-center mt-10">
+        <button
+          onClick={() => router.push("/generate")}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700"
+        >
+          Let's Try!
+        </button>
+      </div>
     </div>
   )
 }
-
