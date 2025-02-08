@@ -1,52 +1,82 @@
 import os
+import pillow as PIL
 from PIL import Image, ImageDraw, ImageFont
 
-import os
-from PIL import Image, ImageDraw, ImageFont
-
-# ✅ Function to Create High-Quality Bold Slides
-def create_slide(text, filename):
-    """Creates an image slide with centered, bold text."""
+def create_slide(text_lines, filename, font_size=180):
+    """Creates an image slide with centered, bold text and better formatting."""
     img = Image.new('RGB', (1920, 1080), color=(0, 0, 0))  # Black background
     draw = ImageDraw.Draw(img)
 
-    # ✅ Load a bold font
     try:
-        font = ImageFont.truetype("Arial Bold.ttf", 100)  # Use a bold font
+        font = ImageFont.truetype("Arial Bold.ttf", font_size)
     except IOError:
-        font = ImageFont.load_default()  # Use default if missing
+        try:
+            # Try alternative fonts if Arial Bold is not available
+            font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
+        except IOError:
+            font = ImageFont.load_default()
 
-    # ✅ Calculate text size using `textbbox()` instead of `textsize()`
-    bbox = draw.textbbox((0, 0), text, font=font)
-    text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    # Calculate total height of all text lines
+    total_height = 0
+    line_heights = []
+    
+    for line in text_lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        line_height = bbox[3] - bbox[1]
+        line_heights.append(line_height)
+        total_height += line_height + 20  # Add 20px spacing between lines
 
-    text_position = ((1920 - text_width) // 2, (1080 - text_height) // 2)  # Center text
+    # Start y position to center all text vertically
+    current_y = (1080 - total_height) // 2
 
-    draw.text(text_position, text, fill=(255, 255, 255), font=font)
+    # Draw each line centered horizontally
+    for i, line in enumerate(text_lines):
+        bbox = draw.textbbox((0, 0), line, font=font)
+        text_width = bbox[2] - bbox[0]
+        x_position = (1920 - text_width) // 2
+        draw.text((x_position, current_y), line, fill=(255, 255, 255), font=font)
+        current_y += line_heights[i] + 20
 
     img.save(filename)
-    print(f"✅ Stylish Slide Created: {filename}")
+    print(f"Enhanced Slide Created: {filename}")
 
-# ✅ Generate Improved Slides
-create_slide("🔥 Nike Air Force 1 🔥\nTimeless Classic - $120", "product_slide.png")
-create_slide("💥 Available Now! 💥\nwww.nike.com & Select Retailers", "purchase_slide.png")
+# Create slides with better formatting
+create_slide(
+    ["Nike Air Force 1", "Timeless Classic", "$120"],
+    "product_slide.png"
+)
+create_slide(
+    ["Available Now!", "www.nike.com", "& Select Retailers"],
+    "purchase_slide.png"
+)
 
+# Create fade in/out effect for slides using FFmpeg
+def create_animated_slide(input_png, output_mp4, duration=3):
+    """Creates a video with fade in/out effects from a static image."""
+    ffmpeg_command = f"""
+    ffmpeg -y -loop 1 -t {duration} -i {input_png} 
+    -vf "fade=t=in:st=0:d=0.5,fade=t=out:st={duration-0.5}:d=0.5,scale=1920:1080,format=yuv420p" 
+    -c:v libx264 -pix_fmt yuv420p {output_mp4}
+    """
+    os.system(ffmpeg_command.replace('\n', ' '))
 
-# ✅ Convert Slides to 3-Second Videos with Bold Text
-os.system("ffmpeg -loop 1 -t 3 -i product_slide.png -vf \"scale=1920:1080,format=yuv420p\" -c:v libx264 product_slide.mp4")
-os.system("ffmpeg -loop 1 -t 3 -i purchase_slide.png -vf \"scale=1920:1080,format=yuv420p\" -c:v libx264 purchase_slide.mp4")
+# Create animated slides
+create_animated_slide("product_slide.png", "product_slide.mp4")
+create_animated_slide("purchase_slide.png", "purchase_slide.mp4")
 
-# ✅ Resize AI Video to Match (Fixes "Input link parameters do not match" error)
-os.system("ffmpeg -i ai_video.mp4 -vf \"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black\" -c:v libx264 -crf 23 -preset slow -c:a copy ai_video_resized.mp4")
+# Resize AI Video to Match
+os.system("""
+ffmpeg -y -i ai_video.mp4 
+-vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black" 
+-c:v libx264 -crf 23 -preset slow -c:a copy ai_video_resized.mp4
+""".replace('\n', ' '))
 
-# ✅ Merge AI Video, Smaller Nike Logo (Bottom Right), and Final Slides
+# Merge everything together
 ffmpeg_command = """
-ffmpeg -i ai_video_resized.mp4 -i nike_logo.png -i product_slide.mp4 -i purchase_slide.mp4 \
--filter_complex "[0:v][1:v] scale=150:-1,overlay=W-w-40:H-h-40 [v0]; \
-[v0] [2:v] [3:v] concat=n=3:v=1:a=0 [v]" \
+ffmpeg -y -i ai_video_resized.mp4 -i product_slide.mp4 -i purchase_slide.mp4 
+-filter_complex "[0:v][1:v][2:v] concat=n=3:v=1:a=0 [v]" 
 -map "[v]" -map 0:a -c:v libx264 -c:a copy final_ad.mp4
 """
+os.system(ffmpeg_command.replace('\n', ' '))
 
-os.system(ffmpeg_command)
-
-print("✅ Final Nike ad created: final_ad.mp4 (Smaller Logo & Stylish Slides)")
+print("Final ad created with enhanced animated slides!")

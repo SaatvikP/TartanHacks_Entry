@@ -6,7 +6,7 @@ from openai import OpenAI
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# ✅ FastAPI App Initialization
+# FastAPI App Initialization
 app = FastAPI()
 
 # ✅ API Keys (Replace with your actual keys)
