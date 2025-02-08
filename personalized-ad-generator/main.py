@@ -207,10 +207,28 @@ def wait_for_video(talk_id):
 # === FastAPI Endpoint to Trigger Pipeline ===
 @app.post("/generate_ad")
 async def generate_ad(request: AdRequest):
-    generate_ad_script(request.artist, request.product)
-    generate_voice(ARTIST_VOICE_IDS[request.artist])
-    video_url = generate_ai_video(ARTIST_IMAGES[request.artist])
-    return {"video_url": video_url}
+    artist = request.artist
+    product = request.product
+    brand = request.brand
+
+    # ✅ Validate Inputs
+    if artist not in ARTIST_VOICE_IDS or artist not in ARTIST_IMAGES:
+        raise HTTPException(status_code=400, detail="Artist not found in database.")
+    if brand not in BRAND_LOGOS:
+        raise HTTPException(status_code=400, detail="Brand not found in database.")
+
+    print(f"🚀 Generating ad for {product} with {artist} for {brand}...")
+
+    # 1️⃣ Generate Ad Script
+    generate_ad_script(artist, product)
+
+    # 2️⃣ Generate AI Video with Artist-Specific Audio
+    video_url = generate_ai_video(ARTIST_IMAGES[artist], artist)  # ✅ Fix applied
+
+    if video_url:
+        return {"video_url": video_url}
+    else:
+        raise HTTPException(status_code=500, detail="Video generation failed.")
 
 # === Run FastAPI Server ===
 if __name__ == "__main__":
